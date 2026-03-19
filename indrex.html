@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Docker Assignment 1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f4f6f8;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        .info {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        .task {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        pre {
+            background: #eee;
+            padding: 10px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Docker Assignment 1</h1>
+
+    <div class="info">
+        <strong>Name:</strong> Rishiraj Singh <br>
+        <strong>SAP ID:</strong> 500123612
+    </div>
+
+    <div class="task">
+        <h2>Task 1: Install Docker</h2>
+        <p>Docker was installed successfully using official documentation.</p>
+    </div>
+
+    <div class="task">
+        <h2>Task 2: Run Hello World Container</h2>
+        <pre>
+docker run hello-world
+        </pre>
+    </div>
+
+    <div class="task">
+        <h2>Task 3: Pull and Run Nginx Container</h2>
+        <pre>
+docker pull nginx
+docker run -d -p 8080:80 nginx
+        </pre>
+    </div>
+
+</body>
+</html>
