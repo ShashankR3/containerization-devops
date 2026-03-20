@@ -1,27 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Docker Assignment</title>
+    <title>Docker + FastAPI Assignment</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            background-color: #f5f7fa;
+            background-color: #f4f6f8;
         }
 
         header {
-            background: #2c3e50;
+            background: #1f2d3d;
             color: white;
             padding: 20px;
             text-align: center;
         }
 
+        header p {
+            margin: 5px;
+        }
+
         section {
-            margin: 30px;
+            margin: 30px auto;
             padding: 20px;
+            width: 80%;
             background: white;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
         h2 {
@@ -31,8 +37,8 @@
         pre {
             background: #eee;
             padding: 10px;
+            border-radius: 6px;
             overflow-x: auto;
-            border-radius: 5px;
         }
 
         img {
@@ -40,18 +46,28 @@
             max-width: 700px;
             margin-top: 10px;
             border-radius: 8px;
+            border: 1px solid #ddd;
         }
 
-        .info {
-            text-align: center;
-            margin-top: 10px;
+        button {
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2980b9;
         }
 
         footer {
+            background: #1f2d3d;
+            color: white;
             text-align: center;
             padding: 15px;
-            background: #2c3e50;
-            color: white;
+            margin-top: 30px;
         }
     </style>
 </head>
@@ -60,15 +76,13 @@
 
 <header>
     <h1>Docker + FastAPI Assignment</h1>
-    <div class="info">
-        <p><strong>Name:</strong> Shashank Rawat</p>
-        <p><strong>SAP ID:</strong> 500122795</p>
-    </div>
+    <p><strong>Name:</strong> Shashank Rawat</p>
+    <p><strong>SAP ID:</strong> 500122795</p>
 </header>
 
 <section>
     <h2>Task 1: Install Docker</h2>
-    <p>Docker was installed successfully.</p>
+    <p>Docker installed successfully.</p>
     <img src="images/docker-install.png">
 </section>
 
@@ -89,14 +103,12 @@ docker run -d -p 8080:80 nginx
 
 <section>
     <h2>Task 4: FastAPI Application</h2>
-    <pre>
-uvicorn app:app --reload
-    </pre>
+    <pre>uvicorn app:app --reload</pre>
     <img src="images/fastapi.png">
 </section>
 
 <section>
-    <h2>Task 5: Dockerize FastAPI</h2>
+    <h2>Task 5: Docker Build</h2>
     <pre>
 docker build -t fastapi-app .
 docker run -p 8000:8000 fastapi-app
@@ -106,22 +118,31 @@ docker run -p 8000:8000 fastapi-app
 
 <section>
     <h2>Task 6: Docker Compose (FastAPI + PostgreSQL)</h2>
-    <pre>
-docker-compose up --build
-    </pre>
+    <pre>docker-compose up --build</pre>
     <img src="images/docker-compose.png">
 </section>
 
+<!-- ✅ YOUR REQUIRED SECTION (CONNECTED LOOK) -->
 <section>
-    <h2>Output</h2>
-    <p>FastAPI running successfully:</p>
-    <pre>http://localhost:8000</pre>
+    <h2>Task 7: FastAPI + PostgreSQL Output</h2>
+
+    <button onclick="getData()">Fetch Data</button>
+
+    <p id="output" style="margin-top:10px; font-weight:bold;"></p>
+
     <img src="images/output.png">
 </section>
 
 <footer>
     <p>© 2026 DevOps Assignment</p>
 </footer>
+
+<script>
+function getData() {
+    document.getElementById("output").innerText =
+        "Hello from FastAPI + PostgreSQL";
+}
+</script>
 
 </body>
 </html>
