@@ -11,6 +11,9 @@
         h1 {
             color: #2c3e50;
         }
+        h2 {
+            color: #34495e;
+        }
         .info {
             font-size: 18px;
             margin-bottom: 20px;
@@ -55,6 +58,82 @@ docker run hello-world
         <pre>
 docker pull nginx
 docker run -d -p 8080:80 nginx
+        </pre>
+    </div>
+
+    <!-- NEW TASKS YOU COMPLETED -->
+
+    <div class="task">
+        <h2>Task 4: Create FastAPI App</h2>
+        <p>Created a FastAPI application with a basic route returning a message.</p>
+        <pre>
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def read_root():
+    return {"message": "Hello from FastAPI + PostgreSQL"}
+        </pre>
+    </div>
+
+    <div class="task">
+        <h2>Task 5: Dockerize FastAPI App</h2>
+        <pre>
+FROM python:3.10
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY . .
+
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+        </pre>
+    </div>
+
+    <div class="task">
+        <h2>Task 6: Setup PostgreSQL with Docker Compose</h2>
+        <pre>
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: testdb
+    ports:
+      - "5432:5432"
+        </pre>
+    </div>
+
+    <div class="task">
+        <h2>Task 7: Run Docker Compose</h2>
+        <pre>
+docker-compose up --build
+        </pre>
+        <p>Application successfully started and connected to PostgreSQL.</p>
+    </div>
+
+    <div class="task">
+        <h2>Task 8: Output</h2>
+        <p>Opened the application in browser:</p>
+        <pre>
+http://localhost:8000
+        </pre>
+        <p>Output received:</p>
+        <pre>
+{"message": "Hello from FastAPI + PostgreSQL"}
         </pre>
     </div>
 
