@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Docker Containerization Assignment – Shashank Rawat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0e17;
+      --surface: #111827;
+      --surface2: #1a2236;
+      --teal: #0ff4c6;
+      --teal-dim: #0cc9a0;
+      --blue: #38bdf8;
+      --accent: #f472b6;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border: rgba(15,244,198,0.15);
+      --mono: 'Space Mono', monospace;
+      --sans: 'Sora', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(15,244,198,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15,244,198,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(100px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .orb-1 { width: 500px; height: 500px; background: rgba(15,244,198,0.07); top: -100px; left: -100px; }
+    .orb-2 { width: 400px; height: 400px; background: rgba(56,189,248,0.06); bottom: 0; right: -80px; }
+    .orb-3 { width: 300px; height: 300px; background: rgba(244,114,182,0.05); top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+    header {
+      position: relative;
+      z-index: 10;
+      padding: 70px 24px 50px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .header-badge {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--teal);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+      animation: fadeDown 0.6s ease both;
+    }
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -1px;
+      animation: fadeDown 0.7s 0.1s ease both;
+    }
+    h1 span { color: var(--teal); }
+    .subtitle {
+      margin-top: 14px;
+      font-size: 1rem;
+      color: var(--muted);
+      font-weight: 300;
+      animation: fadeDown 0.7s 0.2s ease both;
+    }
+    .meta-row {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+      animation: fadeDown 0.7s 0.3s ease both;
+    }
+    .meta-item {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .meta-item strong { color: var(--text); }
+
+    main {
+      position: relative;
+      z-index: 10;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 60px 24px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.6s ease both;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--teal), var(--blue), transparent);
+    }
+    .card:nth-child(2) { animation-delay: 0.1s; }
+    .card:nth-child(3) { animation-delay: 0.2s; }
+    .card:nth-child(4) { animation-delay: 0.3s; }
+    .card:nth-child(5) { animation-delay: 0.4s; }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--teal);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 20px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .card h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 14px;
+    }
+    .tech-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .tech-item:hover {
+      border-color: var(--teal-dim);
+      transform: translateY(-2px);
+    }
+    .tech-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .tech-value {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .tech-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--teal);
+      box-shadow: 0 0 8px var(--teal);
+    }
+
+    .btn-group { display: flex; gap: 14px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.25s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-primary {
+      background: var(--teal);
+      color: #0a0e17;
+    }
+    .btn-primary:hover {
+      background: #fff;
+      box-shadow: 0 0 30px rgba(15,244,198,0.4);
+      transform: translateY(-2px);
+    }
+    .btn-secondary {
+      background: transparent;
+      color: var(--teal);
+      border: 1px solid var(--teal);
+    }
+    .btn-secondary:hover {
+      background: rgba(15,244,198,0.1);
+      transform: translateY(-2px);
+    }
+
+    .code-block {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+    .code-lang {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--teal);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .code-dots { display: flex; gap: 6px; }
+    .code-dots span {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+    .code-dots span:nth-child(1) { background: #ff5f57; }
+    .code-dots span:nth-child(2) { background: #febc2e; }
+    .code-dots span:nth-child(3) { background: #28c840; }
+    pre {
+      padding: 20px;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.7;
+      color: #e2e8f0;
+      overflow-x: auto;
+    }
+    .kw { color: #f472b6; }
+    .str { color: #86efac; }
+    .num { color: var(--blue); }
+    .key { color: var(--teal); }
+    .cm { color: #475569; }
+
+    .io-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin: 20px 0 8px;
+    }
+    .io-label:first-child { margin-top: 0; }
+
+    .env-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .env-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: var(--mono);
+      font-size: 13px;
+    }
+    .env-key { color: var(--teal); min-width: 100px; }
+    .env-sep { color: var(--muted); }
+    .env-val { color: var(--muted); font-style: italic; }
+
+    .persist-banner {
+      background: linear-gradient(135deg, rgba(15,244,198,0.08), rgba(56,189,248,0.05));
+      border: 1px solid rgba(15,244,198,0.2);
+      border-radius: 10px;
+      padding: 16px 20px;
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--teal);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .comp-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .comp-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 13px 18px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .comp-list li:hover {
+      border-color: var(--teal-dim);
+      transform: translateX(4px);
+    }
+    .comp-list li::before {
+      content: '▸';
+      color: var(--teal);
+      font-size: 12px;
+    }
+    .comp-label {
+      font-family: var(--mono);
+      font-size: 13px;
+      color: var(--teal);
+      min-width: 140px;
+      font-weight: 700;
+    }
+    .comp-sep {
+      color: var(--muted);
+    }
+    .comp-val {
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .conclusion-text {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: var(--muted);
+    }
+    .conclusion-text strong { color: var(--text); }
+
+    footer {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 24px;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<header>
+  <div class="header-badge">📦 DevOps Assignment</div>
+  <h1>Docker <span>Containerization</span><br>Assignment</h1>
+  <p class="subtitle">Containerized Web Application using Docker &amp; PostgreSQL</p>
+  <div class="meta-row">
+    <div class="meta-item"><strong>Name:</strong> Shashank Rawat</div>
+    <div class="meta-item"><strong>SAP ID:</strong> 500122795</div>
+    <div class="meta-item"><strong>Batch:</strong> 4</div>
+  </div>
+</header>
+
+<main>
+
+  <!-- PROJECT COMPONENTS -->
+  <div class="card">
+    <div class="section-label">📌 01 — Components</div>
+    <h2>Project Stack</h2>
+    <div class="tech-grid">
+      <div class="tech-item">
+        <div class="tech-dot"></div>
+        <div class="tech-label">Backend</div>
+        <div class="tech-value">Node.js + Express</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-dot" style="background:var(--blue);box-shadow:0 0 8px var(--blue)"></div>
+        <div class="tech-label">Database</div>
+        <div class="tech-value">PostgreSQL</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-dot" style="background:var(--accent);box-shadow:0 0 8px var(--accent)"></div>
+        <div class="tech-label">Containerization</div>
+        <div class="tech-value">Docker</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-dot"></div>
+        <div class="tech-label">Orchestration</div>
+        <div class="tech-value">Docker Compose</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-dot" style="background:#fb923c;box-shadow:0 0 8px #fb923c"></div>
+        <div class="tech-label">Networking</div>
+        <div class="tech-value">ipvlan</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECT COMPONENTS -->
+  <div class="card">
+    <div class="section-label">🗂️ 02 — Overview</div>
+    <h2>Project Components</h2>
+    <ul class="comp-list">
+      <li><span class="comp-label">Backend</span><span class="comp-sep">:</span><span class="comp-val">Node.js + Express</span></li>
+      <li><span class="comp-label">Database</span><span class="comp-sep">:</span><span class="comp-val">PostgreSQL</span></li>
+      <li><span class="comp-label">Containerization</span><span class="comp-sep">:</span><span class="comp-val">Docker</span></li>
+      <li><span class="comp-label">Orchestration</span><span class="comp-sep">:</span><span class="comp-val">Docker Compose</span></li>
+      <li><span class="comp-label">Networking</span><span class="comp-sep">:</span><span class="comp-val">Macvlan</span></li>
+    </ul>
+  </div>
+
+  <!-- GITHUB -->
+  <div class="card">
+    <div class="section-label">🔗 03 — Repository</div>
+    <h2>GitHub Repository</h2>
+    <div class="btn-group">
+      <a
+        class="btn btn-primary"
+        href="https://github.com/ShashankR3/containerization-devops"
+        target="_blank"
+        rel="noopener"
+      >
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+        View Assignment Files
+      </a>
+      <a
+        class="btn btn-secondary"
+        href="https://github.com/ShashankR3/containerization-devops"
+        target="_blank"
+        rel="noopener"
+      >
+        🌐 GitHub Repo
+      </a>
+    </div>
+  </div>
+
+  <!-- INPUT -->
+  <div class="card">
+    <div class="section-label">📥 04 — Input</div>
+    <h2>API Input &amp; Docker Commands</h2>
+
+    <div class="io-label">POST Request</div>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">HTTP</span>
+        <div class="code-dots"><span></span><span></span><span></span></div>
+      </div>
+      <pre><span class="kw">POST</span> <span class="str">/api/records</span>
+{
+  <span class="key">"data"</span>: <span class="str">"Sample Value"</span>
+}</pre>
+    </div>
+
+    <div class="io-label">Docker Commands</div>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">Shell</span>
+        <div class="code-dots"><span></span><span></span><span></span></div>
+      </div>
+      <pre><span class="cm"># Start containers in detached mode</span>
+<span class="kw">docker-compose</span> up -d
+
+<span class="cm"># Stop and remove containers</span>
+<span class="kw">docker-compose</span> down</pre>
+    </div>
+
+    <div class="io-label">Environment Variables</div>
+    <div class="env-grid">
+      <div class="env-row">
+        <span class="env-key">DB_NAME</span>
+      </div>
+      <div class="env-row">
+        <span class="env-key">USERNAME</span>
+      </div>
+      <div class="env-row">
+        <span class="env-key">PASSWORD</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- OUTPUT -->
+  <div class="card">
+    <div class="section-label">📤 05 — Output</div>
+    <h2>API Responses</h2>
+
+    <div class="io-label">API Response — Insert Record</div>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">JSON</span>
+        <div class="code-dots"><span></span><span></span><span></span></div>
+      </div>
+      <pre>{
+  <span class="key">"message"</span>: <span class="str">"Record inserted successfully"</span>
+}</pre>
+    </div>
+
+    <div class="io-label">Fetch Records</div>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">JSON</span>
+        <div class="code-dots"><span></span><span></span><span></span></div>
+      </div>
+      <pre>[
+  { <span class="key">"id"</span>: <span class="num">1</span>, <span class="key">"data"</span>: <span class="str">"Sample Value"</span> }
+]</pre>
+    </div>
+
+    <div class="io-label">Data Persistence</div>
+    <div class="persist-banner">
+      ✅ &nbsp; Data remains after <code>docker-compose down</code> &amp; <code>docker-compose up</code>
+    </div>
+  </div>
+
+  <!-- CONCLUSION -->
+  <div class="card">
+    <div class="section-label">📊 06 — Conclusion</div>
+    <h2>Summary</h2>
+    <p class="conclusion-text">
+      This project demonstrates <strong>containerization of a multi-service application</strong> using Docker.
+      It includes <strong>networking</strong>, <strong>data persistence</strong>, and <strong>efficient image optimization</strong>,
+      making it suitable for real-world deployment. Screenshots are available inside the
+      <strong>screenshots</strong> folder in the repository.
+    </p>
+  </div>
+
+</main>
+
+<footer>
+  SAP ID — 500122795 &nbsp;·&nbsp; Shashank Rawat &nbsp;·&nbsp; Batch 4
+</footer>
+
+</body>
+</html>
